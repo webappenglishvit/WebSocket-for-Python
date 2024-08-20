@@ -296,14 +296,17 @@ class WebSocket(object):
 
         If ``binary`` is set, handles the payload as a binary message.
         """
+        print('Payload ->', payload)
         message_sender = self.stream.binary_message if binary else self.stream.text_message
 
         if isinstance(payload, basestring) or isinstance(payload, bytearray):
             m = message_sender(payload).single(mask=self.stream.always_mask)
+            print('isinstance ->', m)
             self._write(m)
 
         elif isinstance(payload, Message):
             data = payload.single(mask=self.stream.always_mask)
+            print('isinstance 2 ->', data)
             self._write(data)
 
         elif type(payload) == types.GeneratorType:
@@ -313,7 +316,8 @@ class WebSocket(object):
                 self._write(message_sender(bytes).fragment(first=first, mask=self.stream.always_mask))
                 bytes = chunk
                 first = False
-
+            
+            print('isinstance 3 ->', message_sender(bytes).fragment(first=first, last=True, mask=self.stream.always_mask))
             self._write(message_sender(bytes).fragment(first=first, last=True, mask=self.stream.always_mask))
 
         else:
